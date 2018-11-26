@@ -1,5 +1,10 @@
 var inquirer = require('inquirer');
 const questions = require('./questions')
+const Table = require('cli-table')
+
+
+
+
 const influence = [
     1.51, //industry_experience
     1.42, //db_size
@@ -58,25 +63,33 @@ inquirer.prompt({
     type: 'confirm',
     name: 'doesnt mater',
     message: 'Are you Ready?'
-}).then(()=>{
+}).then(() => {
     start()
 });
 
 
-function start(){
+const restable = new Table({
+    head: ['Modifier', 'Value', 'Influence','Modification']
+    , colWidths: [20, 10, 10,10]
+});
+
+function start() {
     inquirer
         .prompt(questions.questions)
         .then(answers => {
+            let tableContent = [];
             let val = 0;
             let inf = 0;
             let result = 0;
-    
+
             Object.keys(answers).map(function (key, i) {
-                val += answers[key] * influence[i]
-                inf += influence[i]
+                let row = [key,answers[key],influence[i],answers[key]*influence[i]/influence[i]];
+                val += answers[key] * influence[i];
+                inf += influence[i];
+                restable.push(row)
             })
             result = val / inf;
-            console.log(result)
-            console.log(answers)
+            console.log(result);
+            console.log(restable.toString())
         });
 };
